@@ -8,6 +8,8 @@ import tiktoken
 import random
 from transformers import AutoTokenizer
 
+random.seed(time.time())
+
 client = OpenAI(base_url="http://192.168.31.87:8999/v1", api_key="123")
 modelname = "QwQ-32B-FP8-Dynamic"
 tokenizer = AutoTokenizer.from_pretrained("./QwQ-32B-AWQ")
@@ -71,6 +73,8 @@ def output_test(target_tokens):
         max_tokens=target_tokens,
         stream=False
     )
+    response_content = stream.choices[0].message.content
+    token_count = len(tokenizer.encode(response_content, add_special_tokens=False))
     
     # 逐块累积输出，直到达到目标 token 数
     # for chunk in stream:
@@ -82,7 +86,7 @@ def output_test(target_tokens):
     
     end_time = time.time()
     elapsed_time = end_time - start_time
-    token_rate = target_tokens / elapsed_time  # 每秒输出 token 数
+    token_rate = token_count / elapsed_time  # 每秒输出 token 数
     return token_rate
 
 def input_test(prompt_tokens):
@@ -131,6 +135,7 @@ def main():
         results = run_test(output_test, args.t, args.tg)
         avg_rate = statistics.mean(results)
         std_dev = statistics.stdev(results) if len(results) > 1 else 0
+        print(results)
         print(f"Output test results:")
         print(f"Average token rate: {avg_rate:.2f} ± {std_dev:.2f} tokens/second")
         # print(f"Standard deviation: {std_dev:.2f} tokens/second")
@@ -139,6 +144,7 @@ def main():
     if args.pp:
         print("\nRunning input test...")
         results = run_test(input_test, args.t, args.pp)
+        print(results)
         avg_rate = statistics.mean(results)
         std_dev = statistics.stdev(results) if len(results) > 1 else 0
         print(f"Input test results:")
