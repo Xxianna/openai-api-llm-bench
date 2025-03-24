@@ -19,3 +19,15 @@ Running input test...
 Input test results:
 Average preprocess rate: 850.29 ± 640.97 tokens/second
 ```
+- 说明
+```
+usage: test.py [-h] [-t T] [-pp PP] [-tg TG]
+
+Test OpenAI API LLM performance
+
+options:
+  -h, --help  show this help message and exit
+  -t T        Number of concurrent processes
+  -pp PP      Number of input tokens for preprocessing test
+  -tg TG      Number of output tokens for generation test
+```
